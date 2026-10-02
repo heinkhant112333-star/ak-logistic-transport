@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: ak-logistic-transport
+    runtime: docker
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ADMIN_USER
+        value: admin
+      - key: ADMIN_PASS
+        sync: false
+      - key: DATABASE_PATH
+        value: ak_logistic.db

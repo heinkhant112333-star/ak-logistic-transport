@@ -1,0 +1,17 @@
+services:
+  ak-logistic:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      SECRET_KEY: "${SECRET_KEY}"
+      ADMIN_USER: "${ADMIN_USER}"
+      ADMIN_PASS: "${ADMIN_PASS}"
+      DATABASE_PATH: "/data/ak_logistic.db"
+      PORT: "8080"
+    volumes:
+      - ak_logistic_data:/data
+
+volumes:
+  ak_logistic_data:
