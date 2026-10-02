@@ -98,16 +98,10 @@ def parcels():
     rows=[dict(x) for x in c.execute(sql+" ORDER BY id DESC",args).fetchall()]; c.close()
     return jsonify(rows)
 
-@app.post("/api/parcels")
-def add():
-    if not auth():
-        return jsonify(error="Unauthorized"),401
+weight_kg=float(d.get("weight_kg") or 0)
 
-    d=request.get_json(force=True)
-
-    t=d.get("tracking","").strip()
-    customer=d.get("customer","").strip()
-    recipient=d.get("recipient","").strip()
+if not t or not customer:
+    return jsonify(error="Tracking and customer are required"),400
     weight_kg=float(d.get("weight_kg") or 0)
 
     if not t or not customer:
