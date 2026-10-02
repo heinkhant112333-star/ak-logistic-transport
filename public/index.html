@@ -12,6 +12,7 @@
 <input id="weight_kg" type="number" placeholder="Weight KG">
 <input id="phone" placeholder="Phone">
 <input id="fee" type="number" placeholder="Fee THB" readonly>
+<button type="button" onclick="add()">💾 SAVE PARCEL</button>
 </div>
 
 <div class="panel"><h2>Search</h2><div class="grid"><input id="q" placeholder="Tracking / Customer"><select id="status"><option value="">All Status</option><option>Waiting Pickup</option><option>Picked Up</option><option>Unclaimed</option></select></div><button onclick="load()">SEARCH</button><button class="gray" onclick="exportCSV()">EXPORT CSV</button><button class="gray" onclick="window.print()">PRINT</button></div><div id="list"></div>
