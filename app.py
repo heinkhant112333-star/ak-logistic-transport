@@ -28,7 +28,15 @@ def init():
     c.execute("""CREATE TABLE IF NOT EXISTS history(
       id INTEGER PRIMARY KEY AUTOINCREMENT, tracking TEXT NOT NULL,
       action TEXT NOT NULL, created_at TEXT NOT NULL)""")
-    c.commit(); c.close()
+    for col, typ in [
+    ("recipient", "TEXT DEFAULT ''"),
+    ("weight_kg", "REAL DEFAULT 0")
+]:
+    try:
+        c.execute(f"ALTER TABLE parcels ADD COLUMN {col} {typ}")
+    except sqlite3.OperationalError:
+        pass
+        c.commit(); c.close()
 init()
 
 def auth():
