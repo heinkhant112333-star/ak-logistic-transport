@@ -100,22 +100,48 @@ def parcels():
 
 @app.post("/api/parcels")
 def add():
-    if not auth(): return jsonify(error="Unauthorized"),401
+    if not auth():
+        return jsonify(error="Unauthorized"),401
+
     d=request.get_json(force=True)
-t=d.get("tracking","").strip()
-customer=d.get("customer","").strip()
-recipient=d.get("recipient","").strip()
-weight_kg=float(d.get("weight_kg") or 0)
-    if not t or not customer: 
+
+    t=d.get("tracking","").strip()
+    customer=d.get("customer","").strip()
+    recipient=d.get("recipient","").strip()
+    weight_kg=float(d.get("weight_kg") or 0)
+
+    if not t or not customer:
         return jsonify(error="Tracking and customer are required"),400
-    now=datetime.now().isoformat(timespec="seconds"); arrival=d.get("arrival") or date.today().isoformat()
+
+    now=datetime.now().isoformat(timespec="seconds")
+    arrival=d.get("arrival") or date.today().isoformat()
+
     c=db()
+
     try:
-        c.execute("INSERT INTO parcels(tracking,customer,recipient,weight_kg,phone,fee,arrival,status,created_at,updated_at) VALUES(?,?,?,?,?,?,?,?,?,?)",
-(t,customer,recipient,weight_kg,d.get("phone",""),float(d.get("fee") or 0),arrival,"Waiting Pickup",now,now))
+        c.execute(
+            "INSERT INTO parcels(tracking,customer,recipient,weight_kg,phone,fee,arrival,status,created_at,updated_at) VALUES(?,?,?,?,?,?,?,?,?,?)",
+            (
+                t,
+                customer,
+                recipient,
+                weight_kg,
+                d.get("phone",""),
+                float(d.get("fee") or 0),
+                arrival,
+                "Waiting Pickup",
+                now,
+                now
+            )
+        )
+        c.commit()
+
     except sqlite3.IntegrityError:
-        c.close(); return jsonify(error="Tracking already exists"),409
-    c.close(); return jsonify(ok=True)
+        c.close()
+        return jsonify(error="Tracking already exists"),409
+
+    c.close()
+    return jsonify(ok=True)
 
 @app.post("/api/parcels/<tracking>/pickup")
 def pickup(tracking):
