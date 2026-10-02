@@ -106,8 +106,8 @@ t=d.get("tracking","").strip()
 customer=d.get("customer","").strip()
 recipient=d.get("recipient","").strip()
 weight_kg=float(d.get("weight_kg") or 0)
-    if not t or not customer: 
-        return jsonify(error="Tracking and customer are required"),400
+if not t or not customer: 
+    return jsonify(error="Tracking and customer are required"),400
     now=datetime.now().isoformat(timespec="seconds"); arrival=d.get("arrival") or date.today().isoformat()
     c=db()
     try:
