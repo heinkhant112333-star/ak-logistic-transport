@@ -30,8 +30,8 @@ async function login(){
                 "Content-Type":"application/json"
             },
             body:JSON.stringify({
-                username:$("#u").value.trim(),
-                password:$("#p").value.trim()
+                username:document.getElementById("u").value.trim(),
+password:document.getElementById("p").value.trim()
             })
         });
 
