@@ -23,20 +23,30 @@ document.getElementById("weight_kg").oninput = function(){
 let current=[],$=x=>document.getElementById(x);async function req(url,opt={}){let r=await fetch(url,{headers:{"Content-Type":"application/json"},...opt});let d=await r.json();if(!r.ok)throw Error(d.error||"Error");return d}
 async function track(){try{let d=await req("/api/public/track/"+encodeURIComponent($("pubTrack").value.trim()));$("trackResult").innerHTML=`<div class="card"><b>${d.tracking}</b><br>Customer: ${d.customer}<br>Fee: ฿${d.fee}<br>Arrival: ${d.arrival}<br>Pickup: ${d.pickup||"-"}<br>Status: <b>${d.status}</b></div>`}catch(e){$("trackResult").textContent=e.message}}
 async function login(){
-    let r = await req("/api/login",{
-        method:"POST",
-        body:JSON.stringify({
-            username:$("#u").value,
-            password:$("#p").value
-        })
-    });
+    try{
+        let r = await fetch("/api/login",{
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json"
+            },
+            body:JSON.stringify({
+                username:$("#u").value.trim(),
+                password:$("#p").value.trim()
+            })
+        });
 
-    if(r.ok){
-        document.getElementById("login").style.display="none";
-        document.getElementById("app").classList.remove("hide");
-        load();
-    }else{
-        alert(r.error || "Login failed");
+        let d = await r.json();
+
+        if(d.ok){
+            document.getElementById("login").style.display="none";
+            document.getElementById("app").classList.remove("hide");
+            load();
+        }else{
+            alert(d.error || "Login failed");
+        }
+
+    }catch(e){
+        alert("Connection error: "+e.message);
     }
 }
 async function logout(){await req("/api/logout",{method:"POST"});location.reload()}
