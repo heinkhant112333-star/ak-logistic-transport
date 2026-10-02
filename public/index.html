@@ -22,7 +22,23 @@ document.getElementById("weight_kg").oninput = function(){
 }
 let current=[],$=x=>document.getElementById(x);async function req(url,opt={}){let r=await fetch(url,{headers:{"Content-Type":"application/json"},...opt});let d=await r.json();if(!r.ok)throw Error(d.error||"Error");return d}
 async function track(){try{let d=await req("/api/public/track/"+encodeURIComponent($("pubTrack").value.trim()));$("trackResult").innerHTML=`<div class="card"><b>${d.tracking}</b><br>Customer: ${d.customer}<br>Fee: ฿${d.fee}<br>Arrival: ${d.arrival}<br>Pickup: ${d.pickup||"-"}<br>Status: <b>${d.status}</b></div>`}catch(e){$("trackResult").textContent=e.message}}
-async function login(){try{await req("/api/login",{method:"POST",body:JSON.stringify({username:$("u").value,password:$("p").value})});$("login").classList.add("hide");$("app").classList.remove("hide");load()}catch(e){alert(e.message)}}
+async function login(){
+    let r = await req("/api/login",{
+        method:"POST",
+        body:JSON.stringify({
+            username:$("#u").value,
+            password:$("#p").value
+        })
+    });
+
+    if(r.ok){
+        document.getElementById("login").style.display="none";
+        document.getElementById("app").classList.remove("hide");
+        load();
+    }else{
+        alert(r.error || "Login failed");
+    }
+}
 async function logout(){await req("/api/logout",{method:"POST"});location.reload()}
 async function add(){try{await req("/api/parcels",{method:"POST",body:JSON.stringify({tracking:$("#tracking").value.trim(),
 customer:$("#customer").value.trim(),
