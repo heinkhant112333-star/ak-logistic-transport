@@ -40,13 +40,24 @@ async function login(){
     }
 }
 async function logout(){await req("/api/logout",{method:"POST"});location.reload()}
-async function add(){try{await req("/api/parcels",{method:"POST",body:JSON.stringify({tracking:$("#tracking").value.trim(),
-customer:$("#customer").value.trim(),
-recipient:$("#recipient").value.trim(),
-weight_kg:$("#weight_kg").value.trim(),
-phone:$("#phone").value.trim()}),
-fee:$("#fee").value.trim()
-})
+async function add(){
+    try{
+        await req("/api/parcels",{
+            method:"POST",
+            body:JSON.stringify({
+                tracking:$("#tracking").value.trim(),
+                customer:$("#customer").value.trim(),
+                recipient:$("#recipient").value.trim(),
+                weight_kg:$("#weight_kg").value.trim(),
+                phone:$("#phone").value.trim(),
+                fee:$("#fee").value.trim()
+            })
+        });
+        load();
+    }catch(e){
+        alert(e.message);
+    }
+}
 async function pickup(t){await req("/api/parcels/"+encodeURIComponent(t)+"/pickup",{method:"POST"});load()}
 async function delp(t){if(confirm("Delete this parcel?")){await req("/api/parcels/"+encodeURIComponent(t),{method:"DELETE"});load()}}
 async function load(){try{let s=await req("/api/stats");["total","waiting","picked","unclaimed"].forEach(x=>$(x).textContent=s[x]);$("fees").textContent="฿"+Number(s.fees).toLocaleString();current=await req("/api/parcels?q="+encodeURIComponent($("q").value)+"&status="+encodeURIComponent($("status").value));$("list").innerHTML=current.map(p=>`<div class="card"><b>${p.tracking}</b><br>Customer: ${p.customer}<br>Phone: ${p.phone||"-"}<br>Fee:Weight: ${p.weight_kg} KG<br> ฿${p.fee}<br>Arrival: ${p.arrival}<br>Pickup: ${p.pickup||"-"}<br>Status: <b>${p.status}</b>${p.status!=="Picked Up"?`<button class="green" onclick="pickup('${p.tracking}')">CONFIRM PICKUP</button>`:""}<button class="red" onclick="delp('${p.tracking}')">DELETE</button></div>`).join("")||"<div class=panel>No parcel found.</div>"}catch(e){if(e.message==="Unauthorized"){}else alert(e.message)}}
