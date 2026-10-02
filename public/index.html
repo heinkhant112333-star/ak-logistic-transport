@@ -5,7 +5,8 @@
 <section id="public" class="panel"><h2>📦 Customer Tracking / 客户查询</h2><input id="pubTrack" placeholder="Tracking Number"><button onclick="track()">TRACK / 查询</button><div id="trackResult"></div></section>
 <section id="login" class="panel"><h2>🔐 Admin Login</h2><input id="u" placeholder="Username"><input id="p" type="password" placeholder="Password"><button onclick="login()">LOGIN</button></section>
 <section id="app" class="hide"><div class="stats"><div>📦 Total<br><b id="total">0</b></div><div>🟡 Waiting<br><b id="waiting">0</b></div><div>🟢 Picked<br><b id="picked">0</b></div><div>🔴 Unclaimed<br><b id="unclaimed">0</b></div><div>💰 Fees<br><b id="fees">฿0</b></div></div>
-<div class="panel"><h2>Receive Parcel</h2><div class="grid"><input id="tracking" placeholder="Tracking / Barcode"><input id="customer" placeholder="Customer Name"><input id="phone" placeholder="Phone"><input id="fee" type="number" placeholder="Fee THB"></div><button onclick="add()">SAVE PARCEL</button></div>
+<div class="panel"><h2>Receive Parcel</h2><div class="grid"><input id="tracking" placeholder="Tracking / Barcode"><input id="customer" placeholder="Customer <input id="recipient" placeholder="Recipient">
+<input id="weight_kg" placeholder="Weight KG">"><input id="phone" placeholder="Phone"><input id="weight_kg" type="number" placeholder="Weight KG"><input id="fee" type="number" placeholder="Fee THB"></div><button onclick="add()">SAVE PARCEL</button></div>
 <div class="panel"><h2>Search</h2><div class="grid"><input id="q" placeholder="Tracking / Customer"><select id="status"><option value="">All Status</option><option>Waiting Pickup</option><option>Picked Up</option><option>Unclaimed</option></select></div><button onclick="load()">SEARCH</button><button class="gray" onclick="exportCSV()">EXPORT CSV</button><button class="gray" onclick="window.print()">PRINT</button></div><div id="list"></div>
 <button class="red" onclick="logout()">LOGOUT</button></section></main>
 <script>
@@ -13,7 +14,13 @@ let current=[],$=x=>document.getElementById(x);async function req(url,opt={}){le
 async function track(){try{let d=await req("/api/public/track/"+encodeURIComponent($("pubTrack").value.trim()));$("trackResult").innerHTML=`<div class="card"><b>${d.tracking}</b><br>Customer: ${d.customer}<br>Fee: ฿${d.fee}<br>Arrival: ${d.arrival}<br>Pickup: ${d.pickup||"-"}<br>Status: <b>${d.status}</b></div>`}catch(e){$("trackResult").textContent=e.message}}
 async function login(){try{await req("/api/login",{method:"POST",body:JSON.stringify({username:$("u").value,password:$("p").value})});$("login").classList.add("hide");$("app").classList.remove("hide");load()}catch(e){alert(e.message)}}
 async function logout(){await req("/api/logout",{method:"POST"});location.reload()}
-async function add(){try{await req("/api/parcels",{method:"POST",body:JSON.stringify({tracking:$("tracking").value.trim(),customer:$("customer").value.trim(),phone:$("phone").value.trim(),fee:$("fee").value})});["tracking","customer","phone","fee"].forEach(x=>$(x).value="");load()}catch(e){alert(e.message)}}
+async function add(){try{await req("/api/parcels",{method:"POST",body:JSON.stringify({tracking:$("#tracking").value.trim(),
+customer:$("#customer").value.trim(),
+recipient:$("#recipient").value.trim(),
+weight_kg:$("#weight_kg").value.trim(),
+phone:$("#phone").value.trim()}),
+fee:$("#fee").value.trim()
+})
 async function pickup(t){await req("/api/parcels/"+encodeURIComponent(t)+"/pickup",{method:"POST"});load()}
 async function delp(t){if(confirm("Delete this parcel?")){await req("/api/parcels/"+encodeURIComponent(t),{method:"DELETE"});load()}}
 async function load(){try{let s=await req("/api/stats");["total","waiting","picked","unclaimed"].forEach(x=>$(x).textContent=s[x]);$("fees").textContent="฿"+Number(s.fees).toLocaleString();current=await req("/api/parcels?q="+encodeURIComponent($("q").value)+"&status="+encodeURIComponent($("status").value));$("list").innerHTML=current.map(p=>`<div class="card"><b>${p.tracking}</b><br>Customer: ${p.customer}<br>Phone: ${p.phone||"-"}<br>Fee: ฿${p.fee}<br>Arrival: ${p.arrival}<br>Pickup: ${p.pickup||"-"}<br>Status: <b>${p.status}</b>${p.status!=="Picked Up"?`<button class="green" onclick="pickup('${p.tracking}')">CONFIRM PICKUP</button>`:""}<button class="red" onclick="delp('${p.tracking}')">DELETE</button></div>`).join("")||"<div class=panel>No parcel found.</div>"}catch(e){if(e.message==="Unauthorized"){}else alert(e.message)}}
