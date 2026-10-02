@@ -56,12 +56,12 @@ async function add(){
         await req("/api/parcels",{
             method:"POST",
             body:JSON.stringify({
-                tracking:$("#tracking").value.trim(),
-                customer:$("#customer").value.trim(),
-                recipient:$("#recipient").value.trim(),
-                weight_kg:$("#weight_kg").value.trim(),
-                phone:$("#phone").value.trim(),
-                fee:$("#fee").value.trim()
+                tracking:$("tracking").value.trim(),
+customer:$("customer").value.trim(),
+recipient:$("recipient").value.trim(),
+weight_kg:$("weight_kg").value.trim(),
+phone:$("phone").value.trim(),
+fee:$("fee").value.trim()
             })
         });
         load();
