@@ -18,17 +18,26 @@ def db():
 
 def init():
     c=db()
+
     c.execute("""CREATE TABLE IF NOT EXISTS parcels(
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      tracking TEXT UNIQUE NOT NULL, customer TEXT NOT NULL,
-      phone TEXT DEFAULT '', fee REAL DEFAULT 0,
-      arrival TEXT NOT NULL, pickup TEXT DEFAULT '',
-      status TEXT NOT NULL DEFAULT 'Waiting Pickup',
-      created_at TEXT NOT NULL, updated_at TEXT NOT NULL)""")
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        tracking TEXT UNIQUE NOT NULL,
+        customer TEXT NOT NULL,
+        phone TEXT DEFAULT '',
+        fee REAL DEFAULT 0,
+        arrival TEXT NOT NULL,
+        pickup TEXT DEFAULT '',
+        status TEXT NOT NULL DEFAULT 'Waiting Pickup',
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL)""")
+
     c.execute("""CREATE TABLE IF NOT EXISTS history(
-      id INTEGER PRIMARY KEY AUTOINCREMENT, tracking TEXT NOT NULL,
-      action TEXT NOT NULL, created_at TEXT NOT NULL)""")
-        for col, typ in [
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        tracking TEXT NOT NULL,
+        action TEXT NOT NULL,
+        created_at TEXT NOT NULL)""")
+
+    for col, typ in [
         ("recipient", "TEXT DEFAULT ''"),
         ("weight_kg", "REAL DEFAULT 0")
     ]:
@@ -36,7 +45,9 @@ def init():
             c.execute(f"ALTER TABLE parcels ADD COLUMN {col} {typ}")
         except sqlite3.OperationalError:
             pass
-        c.commit(); c.close()
+
+    c.commit()
+    c.close()
 init()
 
 def auth():
