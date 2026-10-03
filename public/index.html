@@ -22,7 +22,60 @@ document.getElementById("weight_kg").oninput = function(){
     document.getElementById("fee").value = Number(this.value || 0) * 150;
 }
 let current=[],$=x=>document.getElementById(x);async function req(url,opt={}){let r=await fetch(url,{headers:{"Content-Type":"application/json"},...opt});let d=await r.json();if(!r.ok)throw Error(d.error||"Error");return d}
-async function track(){try{let d=await req("/api/public/track/"+encodeURIComponent($("pubTrack").value.trim()));$("trackResult").innerHTML=`<div class="card"><b>${d.tracking}</b><br>Customer: ${d.customer}<br>Fee: ฿${d.fee}<br>Arrival: ${d.arrival}<br>Pickup: ${d.pickup||"-"}<br>Status: <b>${d.status}</b></div>`}catch(e){$("trackResult").textContent=e.message}}
+async function track(){
+  const input=document.getElementById("pub");
+  const out=document.getElementById("pubout");
+  const q=input.value.trim();
+
+  if(!q){
+    out.innerHTML="Please enter Tracking Number or Recipient Code";
+    return;
+  }
+
+  try{
+    const d=await req("/api/public/track/"+encodeURIComponent(q));
+
+    if(d.type==="tracking"){
+      const p=d.parcel;
+
+      out.innerHTML=`
+        <div class="card">
+          <b>📦 Tracking: ${p.tracking}</b><br>
+          Customer: ${p.customer || "-"}<br>
+          Recipient: <b>${p.recipient || "-"}</b><br>
+          Weight: <b>${Number(p.weight_kg || 0).toFixed(2)} KG</b><br>
+          Fee: <b>฿${Number(p.fee || 0).toLocaleString()}</b><br>
+          Arrival: ${p.arrival || "-"}<br>
+          Pickup: ${p.pickup || "-"}<br>
+          Status: <b>${p.status || "-"}</b>
+        </div>
+      `;
+    }else if(d.type==="recipient"){
+      out.innerHTML=`
+        <div class="card">
+          <b>👤 Recipient: ${d.recipient}</b><br>
+          Total Parcels: <b>${d.total_parcels}</b><br>
+          Total Weight: <b>${Number(d.total_weight_kg || 0).toFixed(2)} KG</b><br>
+          Total Cost: <b>฿${Number(d.total_fee || 0).toLocaleString()}</b>
+        </div>
+
+        ${(d.parcels || []).map(p=>`
+          <div class="card">
+            <b>📦 ${p.tracking}</b><br>
+            Customer: ${p.customer || "-"}<br>
+            Weight: <b>${Number(p.weight_kg || 0).toFixed(2)} KG</b><br>
+            Fee: <b>฿${Number(p.fee || 0).toLocaleString()}</b><br>
+            Arrival: ${p.arrival || "-"}<br>
+            Pickup: ${p.pickup || "-"}<br>
+            Status: <b>${p.status || "-"}</b>
+          </div>
+        `).join("")}
+      `;
+    }
+  }catch(e){
+    out.innerHTML="Parcel not found";
+  }
+}
 async function login(){
     try{
         let r = await fetch("/api/login",{
