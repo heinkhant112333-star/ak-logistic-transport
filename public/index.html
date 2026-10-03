@@ -77,7 +77,8 @@ async  function add(){
       })
     });
 
-    alert("Parcel saved successfully!");
+    alert("Parcel saved successfully!");trackingEl.value = "";
+trackingEl.focus();
     load();
 
   }catch(e){
