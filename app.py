@@ -176,8 +176,9 @@ def logout():
     return jsonify(ok=True)
 
 
-@app.get("/api/public/track/<tracking>")
-def public_track(tracking):
+@app.get("/api/public/track/<query>")
+def public_track(query):
+    query = query.strip()
 
     with db() as c:
         normalize_unclaimed(c)
@@ -187,22 +188,42 @@ def public_track(tracking):
                 SELECT
                     tracking,
                     customer,
+                    recipient,
+                    weight_kg,
                     fee,
                     arrival,
                     pickup,
                     status
                 FROM parcels
-                WHERE tracking=%s
-            """, (tracking,))
+                WHERE tracking = %s
+                   OR recipient = %s
+                ORDER BY id DESC
+            """, (query, query))
 
-            r = cur.fetchone()
+            rows = cur.fetchall()
 
-    if r:
-        return jsonify(r)
+    if not rows:
+        return jsonify(error="Parcel not found"), 404
 
-    return jsonify(
-        error="Parcel not found"
-    ), 404
+    # Tracking number = one parcel
+    if len(rows) == 1 and rows[0]["tracking"] == query:
+        return jsonify({
+            "type": "tracking",
+            "parcel": rows[0]
+        })
+
+    # Recipient code = all parcels
+    total_weight = sum(float(r["weight_kg"] or 0) for r in rows)
+    total_fee = sum(float(r["fee"] or 0) for r in rows)
+
+    return jsonify({
+        "type": "recipient",
+        "recipient": query,
+        "total_parcels": len(rows),
+        "total_weight_kg": total_weight,
+        "total_fee": total_fee,
+        "parcels": rows
+    })
 
 
 @app.get("/api/parcels")
