@@ -2,7 +2,15 @@
 <title>AK Logistic & Transport</title><style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial;background:#f4f7fb;color:#172033}header{background:#075ee6;color:#fff;padding:22px;text-align:center}main{max-width:1050px;margin:auto;padding:15px}.panel,.card{background:#fff;padding:16px;border-radius:15px;margin:12px 0;box-shadow:0 4px 16px #0001}.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:9px}.stats div{background:white;padding:14px;text-align:center;border-radius:13px}input,select,button{width:100%;padding:12px;margin:5px 0;border:1px solid #ccd4df;border-radius:9px;font-size:16px}button{background:#075ee6;color:white;border:0;font-weight:700}.green{background:#18864b}.red{background:#bd2c2c}.gray{background:#667085}.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.hide{display:none}@media(max-width:720px){.stats{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr}}</style></head>
 <body><header><h1>🚚 AK Logistic & Transport</h1><p>Parcel Pickup Management</p></header><main>
-<section id="public" class="panel"><h2>📦 Customer Tracking / 客户查询</h2><input id="pubTrack" placeholder="Tracking Number"><button onclick="track()">TRACK / 查询</button><div id="trackResult"></div></section>
+<section id="public" class="panel">
+  <h2>📦 Customer Tracking / 客户查询</h2>
+
+  <input id="pubTrack" placeholder="Tracking Number / Recipient Code">
+
+  <button type="button" onclick="track()">TRACK / 查询</button>
+
+  <div id="pubout"></div>
+</section>
 <section id="login" class="panel"><h2>🔐 Admin Login</h2><input id="u" placeholder="Username"><input id="p" type="password" placeholder="Password"><button onclick="login()">LOGIN</button></section>
 <section id="app" class="hide"><div class="stats"><div>📦 Total<br><b id="total">0</b></div><div>🟡 Waiting<br><b id="waiting">0</b></div><div>🟢 Picked<br><b id="picked">0</b></div><div>🔴 Unclaimed<br><b id="unclaimed">0</b></div><div>💰 Fees<br><b id="fees">฿0</b></div></div>
 <div class="grid">
