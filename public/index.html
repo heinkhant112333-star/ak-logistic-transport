@@ -23,7 +23,7 @@ document.getElementById("weight_kg").oninput = function(){
 }
 let current=[],$=x=>document.getElementById(x);async function req(url,opt={}){let r=await fetch(url,{headers:{"Content-Type":"application/json"},...opt});let d=await r.json();if(!r.ok)throw Error(d.error||"Error");return d}
 async function track(){
-  const input=document.getElementById("pub");
+  const input=document.getElementById("pubTrack");
   const out=document.getElementById("pubout");
   const q=input.value.trim();
 
