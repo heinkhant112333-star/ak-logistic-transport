@@ -51,23 +51,38 @@ password:document.getElementById("p").value.trim()
     }
 }
 async function logout(){await req("/api/logout",{method:"POST"});location.reload()}
-async function add(){
-    try{
-        await req("/api/parcels",{
-            method:"POST",
-            body:JSON.stringify({
-                tracking:$("tracking").value.trim(),
-customer:$("customer").value.trim(),
-recipient:$("recipient").value.trim(),
-weight_kg:$("weight_kg").value.trim(),
-phone:$("phone").value.trim(),
-fee:$("fee").value.trim()
-            })
-        });
-        load();
-    }catch(e){
-        alert(e.message);
+async  function add(){
+  try{
+    const trackingEl = document.getElementById("tracking");
+    const customerEl = document.getElementById("customer");
+    const recipientEl = document.getElementById("recipient");
+    const weightEl = document.getElementById("weight_kg");
+    const phoneEl = document.getElementById("phone");
+    const feeEl = document.getElementById("fee");
+
+    if(!trackingEl){
+      alert("ERROR: Tracking input ID not found");
+      return;
     }
+
+    await req("/api/parcels",{
+      method:"POST",
+      body:JSON.stringify({
+        tracking: trackingEl.value.trim(),
+        customer: customerEl ? customerEl.value.trim() : "",
+        recipient: recipientEl ? recipientEl.value.trim() : "",
+        weight_kg: weightEl ? weightEl.value.trim() : "0",
+        phone: phoneEl ? phoneEl.value.trim() : "",
+        fee: feeEl ? feeEl.value.trim() : "0"
+      })
+    });
+
+    alert("Parcel saved successfully!");
+    load();
+
+  }catch(e){
+    alert(e.message);
+  }
 }
 async function pickup(t){await req("/api/parcels/"+encodeURIComponent(t)+"/pickup",{method:"POST"});load()}
 async function delp(t){if(confirm("Delete this parcel?")){await req("/api/parcels/"+encodeURIComponent(t),{method:"DELETE"});load()}}
