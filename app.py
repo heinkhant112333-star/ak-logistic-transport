@@ -93,7 +93,7 @@ def parcels():
     c=db(); normalize_unclaimed(c)
     q=request.args.get("q","").strip(); status=request.args.get("status","").strip()
     sql="SELECT * FROM parcels WHERE 1=1"; args=[]
-    if q: sql+=" AND (tracking LIKE ? OR customer LIKE ?)"; args += [f"%{q}%",f"%{q}%"]
+    if q: sql+=" AND (tracking LIKE ? OR customer LIKE ? OR recipient LIKE ?)"; args += [f"%{q}%",f"%{q}%",f"%{q}%"]
     if status: sql+=" AND status=?"; args.append(status)
     rows=[dict(x) for x in c.execute(sql+" ORDER BY id DESC",args).fetchall()]; c.close()
     return jsonify(rows)
